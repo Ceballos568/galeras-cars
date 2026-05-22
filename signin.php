@@ -1,4 +1,11 @@
 <?php
+    session_start();
+    if(!isset($_SESSION['user_id'])){
+        header('refresh:0url=index.php');
+    }
+
+
+    
     //Data base connection
     require('../config/database.php');
     //Get data from login form
@@ -8,7 +15,10 @@
     //Query
     $sql_login = "
     select
-    u.*
+        u.id,
+        u.email.
+        u.firstname || ' ' || u.lastname as fullname
+
     from
         users u
     where
@@ -20,7 +30,11 @@
 
     if($res){
         $num = pg_num_rows($res);
+        $row = $res ->fetch_assoc();
         if($num > 0){
+            $_SESSION['user_id'] = $row['id'];
+            $_SESSION['user_email'] = $row['email'];
+            $_SESSION['user_fullname'] = $row['fullname'];
             header('refresh:0;url=home.php');
         }else{
             echo"<script>alert('email or password not found.')</script>";
